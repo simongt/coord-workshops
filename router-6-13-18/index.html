@@ -26,7 +26,7 @@
 /******************************************* Constants *******************************************/
 
 // Your Coord API key.
-var COORD_API_KEY = '$API_KEY';
+var COORD_API_KEY = 'YOUR_COORD_API_KEY';
 var ROUTING_API_URL = 'https://api.coord.co/v1/routing/route';
 var NY_CENTER = {lat: 40.7301, lng: -73.9937};
 
@@ -113,7 +113,7 @@ function handleMapClick(event) {
 
     // TODO: Use the getRequest() method above to call Coord's Routing API and render the trips
     // using the given renderTrips() method.
-    var url = ''; // TODO: Fill in request url.
+    var url = ROUTING_API_URL + ''; // TODO: Add query params.
     getRequest(url).then(function(response) {
       // TODO: Render trips.
     });
