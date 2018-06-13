@@ -109,13 +109,11 @@ function handleMapClick(event) {
     destinationElement.value = event.latLng;
     destination = event.latLng;
     addFeature(event.latLng);
-    headlineElement.innerHTML = 'TODO: Call Coord\'s Routing API to get routes and render them!';
+    headlineElement.innerHTML = 'Routing options are on the map.';
 
-    // TODO: Use the getRequest() method above to call Coord's Routing API and render the trips
-    // using the given renderTrips() method.
-    var url = ROUTING_API_URL + ''; // TODO: Add query params.
+    var url = ROUTING_API_URL + '?origin_latitude=' + origin.lat() + '&origin_longitude=' + origin.lng() + '&destination_latitude=' + destination.lat() + '&destination_longitude=' + destination.lng() + '&access_key=' + COORD_API_KEY;
     getRequest(url).then(function(response) {
-      // TODO: Render trips.
+      renderTrips(response.trips);
     });
 
     // Set the map's bounds to match the origin and destination.
