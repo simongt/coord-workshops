@@ -26,8 +26,10 @@
 /******************************************* Constants *******************************************/
 
 // Your Coord API key.
-var COORD_API_KEY = '$API_KEY';
+// var COORD_API_KEY = '$API_KEY';
+var COORD_API_KEY = 'r3lV4vH5DuLzTO_wF0LCe0Syhd2VV5BhR59m8-KPyQo';
 var ROUTING_API_URL = 'https://api.coord.co/v1/routing/route';
+// var ROUTING_API_URL = 'https://api.coord.co/v1/routing/route?origin_latitude=40.7398476&origin_longitude=-73.99020680000001&destination_latitude=40.6919505&destination_longitude=-73.93894620000003&modes=bus%2Cmetro%2Cbike&num_options=3&priority=soon&time=2018-06-28T02%3A15%3A00.000Z&time_mode=depart&bike_systems=JumpDC%2CMobikeDC%2CSpinDC%2CofoDC%2CCapitalBikeShare&access_key=r3lV4vH5DuLzTO_wF0LCe0Syhd2VV5BhR59m8-KPyQo';
 var NY_CENTER = {lat: 40.7301, lng: -73.9937};
 
 /******************************************** Globals ********************************************/
@@ -110,11 +112,21 @@ function handleMapClick(event) {
     destination = event.latLng;
     addFeature(event.latLng);
     headlineElement.innerHTML = 'TODO: Call Coord\'s Routing API to get routes!';
-
-    var url = ''; // TODO: Format Coord Routing API URL.
-    getRequest(url).then(function(response) {
-      // TODO: Render routes.
-    });
+  
+  // TODO: Format Coord Routing API URL.
+ var url = `https://api.coord.co/v1/routing/route?origin_latitude=${origin.lat()}&origin_longitude=${origin.lng()}&destination_latitude=${destination.lat()}&destination_longitude=${destination.lng()}&modes=bus%2Cmetro%2Cbike&num_options=3&priority=soon&time=2018-06-28T02%3A15%3A00.000Z&time_mode=depart&bike_systems=JumpDC%2CMobikeDC%2CSpinDC%2CofoDC%2CCapitalBikeShare&access_key=r3lV4vH5DuLzTO_wF0LCe0Syhd2VV5BhR59m8-KPyQo`;
+    getRequest(url)
+      .then(function(response) {
+        // TODO: Render routes.
+        console.table(response);
+        renderTrips(response.trips);
+        // response.trips[].legs[].geometry.{coordinates}
+      });
+  console.log(origin.lat());
+  console.log(origin.lng());
+  console.log(destination.lat());
+  console.log(destination.lng());
+  
 
     // Set the map's bounds to match the origin and destination.
     var bounds = new google.maps.LatLngBounds();
