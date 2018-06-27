@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multi-Modal Routing Boilerplate</title>
+    <link rel="stylesheet" type="text/css" href="https://coord.co/styles/fonts.css">
+    <link rel="stylesheet" type="text/css" href="./style.css">
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="info">
+      <div id="headline"></div>
+      <div id="body"></div>
+      <a id="clear" href="javascript:void(0)" onclick="reset()">Clear</a>
+      <div id="options">
+        <!--
+          Origin/destination inputs are disabled because we only allow clicking to set
+          origin/destination in the code below.
+        -->
+        <input id="origin" placeholder="From" disabled />
+        <input id="destination" placeholder="To" disabled />
+      </div>
+    </div>
+    <script type="text/javascript">
+/******************************************* Constants *******************************************/
+
+// Your Coord API key.
+var COORD_API_KEY = '$API_KEY';
+var ROUTING_API_URL = 'https://api.coord.co/v1/routing/route';
+var NY_CENTER = {lat: 40.7301, lng: -73.9937};
+
+/******************************************** Globals ********************************************/
+
+var map;                // google.maps.Map object we render on.
+var origin = null;      // google.maps.LatLng object of the origin.
+var destination = null; // google.maps.LatLng object of the destination.
+
+var colors = ['#F44336', '#673AB7', '#3F51B5', '#2196F3', '#00BCD4', '#009688', '#4CAF50', '#FF5722'];
+
+// Element selectors.
+var headlineElement = document.getElementById('headline');
+var bodyElement = document.getElementById('body');
+var clearElement = document.getElementById('clear');
+var originElement = document.getElementById('origin');
+var destinationElement = document.getElementById('destination');
+
+/********************************************* Code *********************************************/
+
+// This is boilerplate code for the Coord Workshop on 6/13/18. The goal of the coding portion is to
+// call the Coord Routing API to render routes on the given map (bonus points if you're able to
+// play around with the query parameters as well!). The code below initializes a map and allows a
+// user to click on the map to set an origin and destination. All that's left for you to do is to
+// use the origin and destination lat/lng points to call the Coord Routing API and render the
+// routes on the map.
+
+/** Initialize the map (called on load). */
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: NY_CENTER,
+    zoom: 14,
+    fullscreenControl: false,
+    mapTypeControl: false,
+  });
+
+  headlineElement.innerHTML = 'Click on a point on the map to set an origin.';
+  clearElement.style.display = 'none';
+
+  map.addListener('click', handleMapClick);
+}
+
+/** Method for calling a GET request to an input URL. */
+function getRequest(url) {
+  return fetch(url).then(function(response) { return response.json() });
+}
+
+/** Add a feature to the map. */
+function addFeature(latLng) {
+  var feature = new google.maps.Data.Feature({geometry: latLng});
+  map.data.add(feature);
+}
+
+/** Creates GeoJSON out of a lat/lng. */
+function toGeoJSON(geometry) {
+  return {
+    type: 'Feature',
+    geometry: geometry,
+  };
+}
+
+/** Renders trips (output of Coord Routing API) on the map. */
+function renderTrips(trips) {
+  trips.forEach(function(trip) {
+    trip.legs.forEach(function(leg, i) {
+      var feature = map.data.addGeoJson(toGeoJSON(leg.geometry));
+      map.data.overrideStyle(feature[0], {strokeColor: colors[i%colors.length]});
+    });
+  });
+}
+
+/** Handle a click on the map. */
+function handleMapClick(event) {
+  if (!origin) { // Set the origin if it doesn't exist.
+    originElement.value = event.latLng;
+    origin = event.latLng;
+    addFeature(event.latLng);
+    headlineElement.innerHTML = 'Click on a point on the map to set a destination.';
+  } else if (!destination) { // Set the destination if we have an origin and no destination.
+    destinationElement.value = event.latLng;
+    destination = event.latLng;
+    addFeature(event.latLng);
+    headlineElement.innerHTML = 'TODO: Call Coord\'s Routing API to get routes!';
+
+    var url = ''; // TODO: Format Coord Routing API URL.
+    getRequest(url).then(function(response) {
+      // TODO: Render routes.
+    });
+
+    // Set the map's bounds to match the origin and destination.
+    var bounds = new google.maps.LatLngBounds();
+    bounds.extend(origin);
+    bounds.extend(destination);
+    map.fitBounds(bounds);
+  }
+
+  // Show the clear element, which resets the origin and destination information, if we have an
+  // origin or destination and the clear element currently is not shown.
+  if ((origin || destination) && clearElement.style.display === 'none') {
+    clearElement.style.display = 'block';
+  }
+}
+
+/** Reset all options. */
+function reset() {
+  // Reset all origin/destination values.
+  originElement.value = '';
+  destinationElement.value = '';
+  origin = null;
+  destination = null;
+
+  // Remove all map features.
+  map.data.forEach(function(feature) { map.data.remove(feature) });
+
+  // Reset headline and clear elements.
+  headlineElement.innerHTML = 'Click on a point on the map to set an origin.';
+  clearElement.style.display = 'none';
+}
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMROACu-pmNQBh98gzstsnCrxLmzwTsBM&callback=initMap"
+    async defer></script>
+  </body>
+</html>
